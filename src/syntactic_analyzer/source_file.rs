@@ -1,20 +1,8 @@
+use super::errors::AscciError;
 use std::error::Error;
-use std::fmt::Display;
-use std::fmt::Formatter;
 use std::fs::File;
 use std::io::prelude::*;
 use std::io::BufReader;
-
-#[derive(Debug)]
-pub struct AscciError;
-
-impl Error for AscciError {}
-
-impl Display for AscciError {
-    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        write!(f, "invalid ascci: corrupt contents")
-    }
-}
 
 pub struct SourceFile {
     file_content: String,
