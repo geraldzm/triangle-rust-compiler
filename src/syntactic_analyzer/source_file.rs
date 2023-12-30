@@ -4,6 +4,10 @@ use std::fs::File;
 use std::io::prelude::*;
 use std::io::BufReader;
 
+pub const EOL: char = '\n';
+/// [End Of Transmission](http://en.wikipedia.org/wiki/End-of-Transmission_character)
+pub const EOT: char = '\u{0004}';
+
 pub struct SourceFile {
     file_content: String,
 }
