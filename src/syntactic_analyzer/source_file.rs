@@ -10,6 +10,7 @@ pub const EOT: char = '\u{0004}';
 
 pub struct SourceFile {
     file_content: String,
+    current_line: usize,
 }
 
 impl SourceFile {
@@ -29,7 +30,14 @@ impl SourceFile {
 
         let file_content = file_content.chars().rev().collect();
 
-        Ok(SourceFile { file_content })
+        Ok(SourceFile {
+            file_content,
+            current_line: 1,
+        })
+    }
+
+    pub fn get_current_line(&self) -> usize {
+        self.current_line
     }
 }
 
@@ -37,6 +45,15 @@ impl Iterator for SourceFile {
     type Item = char;
 
     fn next(&mut self) -> Option<Self::Item> {
-        self.file_content.pop()
+        match self.file_content.pop() {
+            Some(c) => {
+                if c == EOL {
+                    self.current_line += 1;
+                }
+
+                Some(c)
+            }
+            _ => None,
+        }
     }
 }
