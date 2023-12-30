@@ -37,7 +37,6 @@ impl Scanner {
 
         self.current_char = self.source_file.next();
     }
-
 }
 
 #[cfg(test)]
