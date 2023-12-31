@@ -64,8 +64,7 @@ impl Scanner {
 
     fn scan_separator(&mut self) {
         loop {
-            // TODO: remove unwrap
-            let current_char = self.current_char.unwrap();
+            let current_char = self.current_char.unwrap_or(source_file::EOT);
 
             match current_char {
                 '!' => {
@@ -84,6 +83,7 @@ impl Scanner {
                 ' ' | '\n' | '\r' | '\t' => {
                     self.take_it();
                 }
+                source_file::EOT => break,
                 _ => break,
             }
         }
