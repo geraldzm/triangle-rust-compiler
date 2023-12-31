@@ -116,7 +116,7 @@ impl Scanner {
                 }
                 '0'..='9' => {
                     // consume all the number
-                    self.consumer(current_spelling, |c| is_digit(c));
+                    self.consumer(current_spelling, is_digit);
 
                     // return type
                     return token::TokenKind::INTLITERAL;
@@ -124,7 +124,7 @@ impl Scanner {
 
                 '+' | '-' | '*' | '/' | '=' | '<' | '>' | '\\' | '&' | '@' | '%' | '^' | '?' => {
                     // consume all the operator
-                    self.consumer(current_spelling, |c| is_operator(c));
+                    self.consumer(current_spelling, is_operator);
 
                     // return type
                     return token::TokenKind::OPERATOR;
@@ -149,6 +149,69 @@ impl Scanner {
                     self.take_it_into(current_spelling);
                     return token::TokenKind::DOT;
                 }
+
+                ':' => {
+                    self.take_it_into(current_spelling);
+                    if let Some(c) = self.current_char {
+                        if c == '=' {
+                            self.take_it_into(current_spelling);
+                            return token::TokenKind::BECOMES;
+                        }
+                    }
+
+                    return token::TokenKind::COLON;
+                }
+
+                ';' => {
+                    self.take_it_into(current_spelling);
+                    return token::TokenKind::SEMICOLON;
+                }
+
+                ',' => {
+                    self.take_it_into(current_spelling);
+                    return token::TokenKind::COMMA;
+                }
+
+                '~' => {
+                    self.take_it_into(current_spelling);
+                    return token::TokenKind::IS;
+                }
+
+                '(' => {
+                    self.take_it_into(current_spelling);
+                    return token::TokenKind::LPAREN;
+                }
+
+                ')' => {
+                    self.take_it_into(current_spelling);
+                    return token::TokenKind::RPAREN;
+                }
+
+                '[' => {
+                    self.take_it_into(current_spelling);
+                    return token::TokenKind::LBRACKET;
+                }
+
+                ']' => {
+                    self.take_it_into(current_spelling);
+                    return token::TokenKind::RBRACKET;
+                }
+
+                '{' => {
+                    self.take_it_into(current_spelling);
+                    return token::TokenKind::LCURLY;
+                }
+
+                '}' => {
+                    self.take_it_into(current_spelling);
+                    return token::TokenKind::RCURLY;
+                }
+
+                source_file::EOT => {
+                    self.take_it_into(current_spelling);
+                    return token::TokenKind::EOT;
+                }
+
                 _ => token::TokenKind::ERROR,
             }
         } else {
