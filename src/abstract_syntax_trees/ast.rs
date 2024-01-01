@@ -1,16 +1,8 @@
 use crate::syntactic_analyzer::source_position::SourcePosition;
 
-pub struct AST {
-    _source_position: SourcePosition
-}
+use super::visitor::Visitor;
 
-impl AST {
-    fn _new(source_position: SourcePosition) -> AST {
-        AST { _source_position: source_position }
-    }
-}
-
-
-pub trait Visitable {
-    fn visit<T, G>(&mut self, t: T) -> G;
+pub trait AST {
+    fn get_position<'a>(&'a self) -> &'a SourcePosition;
+    fn visit<T, G>(&mut self, visitor: impl Visitor, t: T) -> G;
 }

@@ -56,7 +56,7 @@
 //    // Actual Parameters
 //    fn visitConstActualParameter<T, U>(ConstActualParameter ast, t: T) -> U;
 //    fn visitFuncActualParameter<T, U>(FuncActualParameter ast, t: T) -> U;
-//    fn visitProcActualParameter<T, U>(ProcActualParameter ast, t: T) -> U;
+      fn visit_proc_actual_parameter<T, U>(ProcActualParameter ast, t: T) -> U;
 //    fn visitVarActualParameter<T, U>(VarActualParameter ast, t: T) -> U;
  
 //    fn visitEmptyActualParameterSequence<T, U>(EmptyActualParameterSequence ast, t: T) -> U;
