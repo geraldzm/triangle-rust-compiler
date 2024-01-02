@@ -9,7 +9,7 @@ fn is_letter(c: char) -> bool {
 }
 
 fn is_digit(c: char) -> bool {
-    c.is_ascii_alphanumeric()
+    c.is_numeric()
 }
 
 fn is_operator(c: char) -> bool {
@@ -264,6 +264,40 @@ mod tests {
 
         let operator = 'z';
         assert!(!is_operator(operator));
+    }
+
+    #[test]
+    fn is_letter_test() {
+        
+        assert!(is_letter('d'));
+        assert!(is_letter('J'));
+        assert!(is_letter('A'));
+        assert!(is_letter('z'));
+
+        assert!(!is_letter('\t'));
+        assert!(!is_letter('\n'));
+        assert!(!is_letter('3'));
+        assert!(!is_letter(source_file::EOL));
+        assert!(!is_letter(source_file::EOT));
+
+    }
+
+
+    #[test]
+    fn is_digit_test() {
+        
+        assert!(is_digit('3'));
+        assert!(is_digit('0'));
+        assert!(is_digit('9'));
+
+        assert!(!is_digit('J'));
+        assert!(!is_digit('A'));
+        assert!(!is_digit('a'));
+        assert!(!is_digit('\t'));
+        assert!(!is_digit('\n'));
+        assert!(!is_digit(source_file::EOL));
+        assert!(!is_digit(source_file::EOT));
+
     }
     
 }
