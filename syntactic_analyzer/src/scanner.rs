@@ -98,9 +98,10 @@ impl Scanner {
 
         // keep consuming until predicate is false or we run out of chars
         while let Some(c) = self.current_char {
-            dbg!(c);
             if predicate(c) {
                 self.take_it_into(current_spelling);
+            } else {
+                break;
             }
         }
     }
@@ -229,7 +230,6 @@ impl Scanner {
         // match current character with a token type
         let kind = self.match_char(&mut spelling);
 
-
         // create a source position
         let finish_line = self.source_file.get_current_line();
         let pos = SourcePosition::new_with(start_line, finish_line);
@@ -269,7 +269,6 @@ mod tests {
 
     #[test]
     fn is_letter_test() {
-        
         assert!(is_letter('d'));
         assert!(is_letter('J'));
         assert!(is_letter('A'));
@@ -280,13 +279,10 @@ mod tests {
         assert!(!is_letter('3'));
         assert!(!is_letter(source_file::EOL));
         assert!(!is_letter(source_file::EOT));
-
     }
-
 
     #[test]
     fn is_digit_test() {
-        
         assert!(is_digit('3'));
         assert!(is_digit('0'));
         assert!(is_digit('9'));
@@ -298,7 +294,5 @@ mod tests {
         assert!(!is_digit('\n'));
         assert!(!is_digit(source_file::EOL));
         assert!(!is_digit(source_file::EOT));
-
     }
-    
 }
