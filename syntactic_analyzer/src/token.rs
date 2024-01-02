@@ -14,6 +14,18 @@ impl Token {
             position,
         }
     }
+
+    pub fn kind(&self) -> &TokenKind {
+        &self.kind
+    }
+
+    pub fn spelling(&self) -> &String {
+        &self.spelling
+    }
+
+    pub fn position(&self) -> &SourcePosition {
+        &self.position
+    }
 }
 
 pub enum TokenKind {

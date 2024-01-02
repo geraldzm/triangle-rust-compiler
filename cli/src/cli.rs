@@ -1,6 +1,6 @@
 use std::error::Error;
 
-use crate::syntactic_analyzer::source_file::SourceFile;
+use syntactic_analyzer::{source_file::SourceFile, scanner::Scanner, token};
 
 pub struct Config {
     pub file_path: String,
@@ -27,11 +27,31 @@ impl Config {
 }
 
 pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
+    
     let source_file = SourceFile::build(config.file_path)?;
+    let mut scanner = Scanner::new(source_file);
 
-    for c in source_file {
-        println!("{c}");
+    println!("here");
+    loop {
+
+        let token = scanner.scan();
+        println!("scanned");
+
+        match token.kind() {
+            token::TokenKind::EOT => {
+                println!("EOT found!");
+                break;
+            },
+            token::TokenKind::ERROR => {
+                println!("Error found!");
+                break;
+            },
+            _ => {
+                println!("Token: {} at line {}", token.spelling(), token.position());
+            }
+        }
+
     }
-
+   
     Ok(())
 }

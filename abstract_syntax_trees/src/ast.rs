@@ -4,5 +4,5 @@ use super::visitor::Visitor;
 
 pub trait AST {
     fn get_position<'a>(&'a self) -> &'a SourcePosition;
-    fn visit<T, G>(&mut self, visitor: impl Visitor, t: T) -> G;
+    fn visit<T, G>(&mut self, visitor: &impl Visitor, t: T) -> G;
 }

@@ -1,6 +1,6 @@
 use crate::syntactic_analyzer::source_position::SourcePosition;
 
-use super::{terminal::Terminal, ast::AST, visitor::Visitor};
+use super::{ast::AST, visitor::Visitor};
 
 
 
@@ -9,7 +9,7 @@ pub struct CharacterLiteral {
     position: SourcePosition   
 }
 
-impl Terminal for CharacterLiteral {
+impl CharacterLiteral {
     fn new(spelling: String, position: SourcePosition) -> Self {
         CharacterLiteral {
             spelling,
@@ -24,9 +24,8 @@ impl AST for CharacterLiteral {
         &self.position
     }
 
-    fn visit<T, G>(&mut self, visitor: impl Visitor, t: T) -> G {
+    fn visit<T, G>(&mut self, visitor: &impl Visitor, t: T) -> G {
         todo!()
     }
 
-  
 }

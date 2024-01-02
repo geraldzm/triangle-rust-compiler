@@ -228,6 +228,7 @@ impl Scanner {
         // match current character with a token type
         let kind = self.match_char(&mut spelling);
 
+
         // create a source position
         let finish_line = self.source_file.get_current_line();
         let pos = SourcePosition::new_with(start_line, finish_line);
@@ -264,4 +265,5 @@ mod tests {
         let operator = 'z';
         assert!(!is_operator(operator));
     }
+    
 }

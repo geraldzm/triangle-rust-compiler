@@ -1,7 +1,7 @@
 use std::env;
 use std::process;
 
-use triangle_rust_compiler::cli;
+use cli::cli;
 
 fn main() {
     let config = cli::Config::build(env::args()).unwrap_or_else(|err| {
