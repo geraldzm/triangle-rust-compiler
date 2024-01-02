@@ -98,6 +98,7 @@ impl Scanner {
 
         // keep consuming until predicate is false or we run out of chars
         while let Some(c) = self.current_char {
+            dbg!(c);
             if predicate(c) {
                 self.take_it_into(current_spelling);
             }
