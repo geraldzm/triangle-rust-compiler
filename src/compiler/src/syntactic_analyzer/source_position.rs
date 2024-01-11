@@ -1,12 +1,13 @@
 use std::fmt::Display;
 
+#[derive(Clone)]
 pub struct SourcePosition {
-    start: usize,
-    finish: usize,
+    pub start: usize,
+    pub finish: usize,
 }
 
 impl SourcePosition {
-    pub fn new() -> SourcePosition {
+    pub fn new() -> Self {
         SourcePosition {
             start: 0,
             finish: 0,

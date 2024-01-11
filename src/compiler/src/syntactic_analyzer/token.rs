@@ -2,8 +2,8 @@ use super::source_position::SourcePosition;
 
 pub struct Token {
     kind: TokenKind,
-    spelling: String,
-    position: SourcePosition,
+    pub position: SourcePosition,
+    pub spelling: String,
 }
 
 impl Token {

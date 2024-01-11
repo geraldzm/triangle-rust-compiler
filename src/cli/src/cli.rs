@@ -1,6 +1,7 @@
 use std::error::Error;
 
-use syntactic_analyzer::{scanner::Scanner, source_file::SourceFile, token};
+use compiler::syntactic_analyzer::{source_file::SourceFile, scanner::Scanner, token};
+
 
 pub struct Config {
     pub file_path: String,

@@ -2,7 +2,6 @@
 resolver = "2"
 
 members = [
-	"cli",
-	"syntactic_analyzer",
-    "abstract_syntax_trees",
+	"src/cli",
+	"src/compiler",
 ]

@@ -2,7 +2,7 @@ use std::error::Error;
 use std::fmt::Display;
 use std::fmt::Formatter;
 
-use crate::source_position::SourcePosition;
+use super::source_position::SourcePosition;
 
 #[derive(Debug)]
 pub struct AscciError;
@@ -33,7 +33,7 @@ pub struct ErrorReporter {
 }
 
 impl ErrorReporter {
-    pub fn new() -> ErrorReporter {
+    pub fn new() -> Self {
         ErrorReporter { num_errors: 0 }
     }
 
