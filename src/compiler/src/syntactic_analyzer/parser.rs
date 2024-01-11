@@ -37,21 +37,23 @@ impl Parser {
         }
     }
 
-    // // start records the position of the start of a phrase.
-    // // This is defined to be the position of the first
-    // // character of the first token of the phrase.
-    fn start(&self, position: &mut SourcePosition) {
-        if let Some(token) = &self.current_token {
-            position.start = token.position().start;
+    /// start records the position of the start of a phrase.
+    /// This is defined to be the position of the first
+    /// character of the first token of the phrase.
+    fn start(&self) -> SourcePosition {
+        match &self.current_token {
+            Some(token) => SourcePosition::new_with(token.position().start, 0),
+            _ => SourcePosition::new(),
         }
     }
 
-    // // finish records the position of the end of a phrase.
-    // // This is defined to be the position of the last
-    // // character of the last token of the phrase.
-    fn finish(&self, position: &mut SourcePosition) {
-        if let Some(prev_pos) = &self.previous_position {
-            position.finish = prev_pos.finish;
+    /// finish records the position of the end of a phrase.
+    /// This is defined to be the position of the last
+    /// character of the last token of the phrase.
+    fn finish(&self) -> SourcePosition {
+        match &self.current_token {
+            Some(token) => SourcePosition::new_with(0, token.position().finish),
+            _ => SourcePosition::new(),
         }
     }
 
@@ -126,8 +128,7 @@ impl Parser {
     fn parse_command(&mut self) {
         //-> Result<(), SyntaxError> {
 
-        let mut command_pos = SourcePosition::new();
-        self.start(&mut command_pos);
+        let mut command_pos = self.start();
 
         //     mmand commandAST = null; // in case there's a syntactic error
 
