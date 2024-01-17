@@ -11,7 +11,7 @@ pub struct Parser {
     lexical_analyser: Scanner,
     error_reporter: ErrorReporter,
     current_token: Option<Token>,
-    previous_position: Option<SourcePosition>,
+    previous_position: SourcePosition,
 }
 
 impl Parser {
@@ -20,17 +20,17 @@ impl Parser {
             lexical_analyser,
             error_reporter,
             current_token: None,
-            previous_position: Some(SourcePosition::new()),
+            previous_position: SourcePosition::new(),
         }
     }
 
-    /// Returns the String of current token (if any) and scans a new token
+    /// Returns the String (spelling) of current token (if any) and scans a new token
     /// into current_token
     ///  
     fn accept_it(&mut self) -> Option<String> {
         match self.current_token.replace(self.lexical_analyser.scan()) {
             Some(token) => {
-                self.previous_position = Some(token.position);
+                self.previous_position = token.position;
                 Some(token.spelling)
             }
             _ => None,
@@ -109,9 +109,10 @@ impl Parser {
         match &self.current_token {
             Some(token) if matches!(token.kind(), TokenKind::INTLITERAL) => {
                 if let Some(spelling) = self.accept_it() {
-                    if let Some(pos) = &self.previous_position {
-                        return Ok(IntegerLiteral::new(spelling, pos.clone()));
-                    }
+                    return Ok(IntegerLiteral::new(
+                        spelling,
+                        self.previous_position.clone(),
+                    ));
                 }
 
                 err
@@ -125,16 +126,15 @@ impl Parser {
     // COMMANDS
     //
     // ----------------------------------------------------------------------------
-    fn parse_command(&mut self) {
-        //-> Result<(), SyntaxError> {
+    fn parse_command(&mut self) -> Result<(), SyntaxError> {
+        //  Command commandAST = null; // in case there's a syntactic error
 
-        let mut command_pos = self.start();
-
-        //     mmand commandAST = null; // in case there's a syntactic error
-
+        // -----
         // SourcePosition commandPos = new SourcePosition();
-
         // start(commandPos);
+        let mut command_pos = self.start();
+        // -----
+
         // commandAST = parseSingleCommand();
         // while (currentToken.kind == Token.SEMICOLON) {
         //   acceptIt();
@@ -143,5 +143,7 @@ impl Parser {
         //   commandAST = new SequentialCommand(commandAST, c2AST, commandPos);
         // }
         // return commandAST;
+
+        Err(self.syntactic_error("sdkfj", ""))
     }
 }
