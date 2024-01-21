@@ -1,7 +1,7 @@
 use super::source_position::SourcePosition;
 
 pub struct Token {
-    kind: TokenKind,
+    pub kind: TokenKind,
     pub position: SourcePosition,
     pub spelling: String,
 }
@@ -28,6 +28,7 @@ impl Token {
     }
 }
 
+#[derive(PartialEq)]
 pub enum TokenKind {
     // literals, identifiers, operators...
     INTLITERAL,

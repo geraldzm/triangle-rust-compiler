@@ -14,8 +14,22 @@ impl SourcePosition {
         }
     }
 
-    pub fn new_with(start: usize, finish: usize) -> SourcePosition {
+    pub fn new_with(start: usize, finish: usize) -> Self {
         SourcePosition { start, finish }
+    }
+
+    pub fn start_from(from: &Self) -> Self {
+        SourcePosition {
+            start: from.start,
+            finish: 0,
+        }
+    }
+
+    pub fn finish_from(from: &Self) -> Self {
+        SourcePosition {
+            start: 0,
+            finish: from.finish,
+        }
     }
 }
 
