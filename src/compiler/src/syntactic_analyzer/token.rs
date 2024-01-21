@@ -26,6 +26,14 @@ impl Token {
     pub fn position(&self) -> &SourcePosition {
         &self.position
     }
+
+    pub fn error_token() -> Self {
+        Self {
+            kind: TokenKind::ERROR,
+            spelling: String::new(),
+            position: SourcePosition::new(),
+        }
+    }
 }
 
 #[derive(PartialEq)]
