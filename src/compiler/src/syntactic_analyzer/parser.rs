@@ -1,4 +1,7 @@
-use crate::abstract_syntax_trees::{command::Command, integer_literal::IntegerLiteral};
+use crate::abstract_syntax_trees::{
+    character_literal::CharacterLiteral, command::Command, identifier::Identifier,
+    integer_literal::IntegerLiteral, operator::Operator,
+};
 
 use super::{
     errors::{ErrorReporter, SyntaxError},
@@ -67,18 +70,63 @@ impl Parser {
 //
 // ----------------------------------------------------------------------------
 
-fn parse_integer_literal(parser: &mut Parser) -> Result<IntegerLiteral, SyntaxError> {
-    // match token with Int Literal
-    match parser.scan() {
-        Token {
-            kind: TokenKind::INTLITERAL,
-            position,
-            spelling,
-        } => Ok(IntegerLiteral::new(spelling, position)),
-        token => Err(parser.syntactic_error(token, "integer literal expected here", "")),
+fn parse_literal<F, G>(
+    parser: &mut Parser,
+    kind: TokenKind,
+    error_ms: &'static str,
+    new: F,
+) -> Result<G, SyntaxError>
+where
+    F: Fn(String, SourcePosition) -> G,
+{
+    let token = parser.scan();
+
+    if token.kind == kind {
+        Ok(new(token.spelling, token.position))
+    } else {
+        Err(parser.syntactic_error(token, error_ms, ""))
     }
 }
 
+fn _parse_integer_literal(parser: &mut Parser) -> Result<IntegerLiteral, SyntaxError> {
+    // match token with Int Literal
+    parse_literal(
+        parser,
+        TokenKind::INTLITERAL,
+        "integer literal expected here",
+        IntegerLiteral::new,
+    )
+}
+
+fn _parse_character_literal(parser: &mut Parser) -> Result<CharacterLiteral, SyntaxError> {
+    // match token with Char Literal
+    parse_literal(
+        parser,
+        TokenKind::CHARLITERAL,
+        "character literal expected here",
+        CharacterLiteral::new,
+    )
+}
+
+fn _parse_identifier_literal(parser: &mut Parser) -> Result<Identifier, SyntaxError> {
+    // match token with identifier Literal
+    parse_literal(
+        parser,
+        TokenKind::IDENTIFIER,
+        "identifier literal expected here",
+        Identifier::new,
+    )
+}
+
+fn _parse_operator_literal(parser: &mut Parser) -> Result<Operator, SyntaxError> {
+    // match token with operator Literal
+    parse_literal(
+        parser,
+        TokenKind::OPERATOR,
+        "operator literal expected here",
+        Operator::new,
+    )
+}
 // ----------------------------------------------------------------------------
 //
 // PROGRAMS

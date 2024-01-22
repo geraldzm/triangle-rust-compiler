@@ -5,4 +5,5 @@ pub mod command;
 pub mod identifier;
 pub mod integer_literal;
 pub mod proc_actual_parameter;
+pub mod operator;
 pub mod visitor;
