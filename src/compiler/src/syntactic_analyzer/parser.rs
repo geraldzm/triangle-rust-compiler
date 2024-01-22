@@ -1,5 +1,6 @@
 use crate::abstract_syntax_trees::{
-    character_literal::CharacterLiteral, command::Command, identifier::Identifier,
+    character_expression::CharacterExpression, character_literal::CharacterLiteral,
+    command::Command, identifier::Identifier, integer_expression::IntegerExpression,
     integer_literal::IntegerLiteral, operator::Operator,
 };
 
@@ -33,27 +34,16 @@ impl Parser {
         }
     }
 
-    fn pos<F>(&self, f: F) -> SourcePosition
-    where
-        F: Fn(&SourcePosition) -> SourcePosition,
-    {
+    fn pos_start(&self) -> SourcePosition {
         match &self.current_token {
-            Some(Token { position, .. }) => f(position),
+            Some(Token { position, .. }) => SourcePosition::start_from(position),
             None => SourcePosition::new(),
         }
     }
 
-    fn pos_start(&self) -> SourcePosition {
-        self.pos(SourcePosition::start_from)
-    }
-
-    fn _pos_finish(&self) -> SourcePosition {
-        self.pos(SourcePosition::finish_from)
-    }
-
     fn syntactic_error(
         &mut self,
-        token: Token,
+        token: &Token,
         message_template: &str,
         token_quoted: &str,
     ) -> SyntaxError {
@@ -84,7 +74,7 @@ where
     if token.kind == kind {
         Ok(new(token.spelling, token.position))
     } else {
-        Err(parser.syntactic_error(token, error_ms, ""))
+        Err(parser.syntactic_error(&token, error_ms, ""))
     }
 }
 
@@ -218,14 +208,46 @@ fn parse_secondary_expression(parser: &mut Parser) -> Result<(), SyntaxError> {
 
 fn _parse_primary_expression(parser: &mut Parser) -> Result<(), SyntaxError> {
     // Save start of command
-    let mut _primary_expression_pos = parser.pos_start();
+    let mut primary_expression_pos = parser.pos_start();
 
-    // match token with a command
-    // match parser.scan() {
-    //     _ => {
-    //         (parser);
-    //     } // _ => todo!(),
-    // }
+    // match token with an primary expression
+    match parser.scan() {
+        Token {
+            kind: TokenKind::INTLITERAL,
+            spelling,
+            position,
+        } => {
+            // save end of the expression
+            primary_expression_pos.finish = position.finish;
+
+            // create AST struct
+            let int_lit_ast = IntegerLiteral::new(spelling, position);
+
+            // create Expression
+            IntegerExpression::new(int_lit_ast, primary_expression_pos);
+        }
+        Token {
+            kind: TokenKind::CHARLITERAL,
+            spelling,
+            position,
+        } => {
+            // save end of the expression
+            primary_expression_pos.finish = position.finish;
+
+            // create AST struct
+            let char_lit_ast = CharacterLiteral::new(spelling, position);
+
+            // create Expression
+            CharacterExpression::new(char_lit_ast, primary_expression_pos);
+        }
+        token => {
+            return Err(parser.syntactic_error(
+                &token,
+                "\"%\" cannot start an expression",
+                &token.spelling,
+            ));
+        }
+    }
 
     todo!()
 }
