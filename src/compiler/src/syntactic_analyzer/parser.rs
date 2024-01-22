@@ -41,14 +41,9 @@ impl Parser {
         }
     }
 
-    fn syntactic_error(
-        &mut self,
-        token: &Token,
-        message_template: &str,
-        token_quoted: &str,
-    ) -> SyntaxError {
+    fn syntactic_error(&mut self, token: &Token, message_template: &str) -> SyntaxError {
         self.error_reporter
-            .report_error(message_template, token_quoted, &token.position);
+            .report_error(message_template, &token.spelling, &token.position);
 
         SyntaxError
     }
@@ -74,7 +69,7 @@ where
     if token.kind == kind {
         Ok(new(token.spelling, token.position))
     } else {
-        Err(parser.syntactic_error(&token, error_ms, ""))
+        Err(parser.syntactic_error(&token, error_ms))
     }
 }
 
@@ -241,11 +236,7 @@ fn _parse_primary_expression(parser: &mut Parser) -> Result<(), SyntaxError> {
             CharacterExpression::new(char_lit_ast, primary_expression_pos);
         }
         token => {
-            return Err(parser.syntactic_error(
-                &token,
-                "\"%\" cannot start an expression",
-                &token.spelling,
-            ));
+            return Err(parser.syntactic_error(&token, "\"%\" cannot start an expression"));
         }
     }
 
