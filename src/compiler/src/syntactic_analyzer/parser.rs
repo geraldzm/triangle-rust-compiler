@@ -1,4 +1,4 @@
-use crate::abstract_syntax_trees::command::Command;
+use crate::abstract_syntax_trees::{command::Command, integer_literal::IntegerLiteral};
 
 use super::{
     errors::{ErrorReporter, SyntaxError},
@@ -47,23 +47,18 @@ impl Parser {
     fn _pos_finish(&self) -> SourcePosition {
         self.pos(SourcePosition::finish_from)
     }
-}
 
-fn _syntactic_error(
-    current_token: &Option<Token>,
-    error_reporter: &mut ErrorReporter,
-    message_template: &str,
-    token_quoted: &str,
-) -> SyntaxError {
-    let mut pos = &SourcePosition::new();
+    fn syntactic_error(
+        &mut self,
+        token: Token,
+        message_template: &str,
+        token_quoted: &str,
+    ) -> SyntaxError {
+        self.error_reporter
+            .report_error(message_template, token_quoted, &token.position);
 
-    if let Some(token) = &current_token {
-        pos = token.position();
+        SyntaxError
     }
-
-    error_reporter.report_error(message_template, token_quoted, pos);
-
-    SyntaxError
 }
 
 // ----------------------------------------------------------------------------
@@ -71,6 +66,18 @@ fn _syntactic_error(
 // LITERALS
 //
 // ----------------------------------------------------------------------------
+
+fn parse_integer_literal(parser: &mut Parser) -> Result<IntegerLiteral, SyntaxError> {
+    // match token with Int Literal
+    match parser.scan() {
+        Token {
+            kind: TokenKind::INTLITERAL,
+            position,
+            spelling,
+        } => Ok(IntegerLiteral::new(spelling, position)),
+        token => Err(parser.syntactic_error(token, "integer literal expected here", "")),
+    }
+}
 
 // ----------------------------------------------------------------------------
 //
@@ -127,11 +134,11 @@ fn parse_single_command(parser: &mut Parser) -> Result<Command, SyntaxError> {
     todo!()
 }
 
-///////////////////////////////////////////////////////////////////////////////
+// ----------------------------------------------------------------------------
 //
 // EXPRESSIONS
 //
-///////////////////////////////////////////////////////////////////////////////
+// ----------------------------------------------------------------------------
 
 fn parse_expression(parser: &mut Parser) -> Result<(), SyntaxError> {
     // Save start of command
@@ -150,6 +157,20 @@ fn parse_expression(parser: &mut Parser) -> Result<(), SyntaxError> {
 fn parse_secondary_expression(parser: &mut Parser) -> Result<(), SyntaxError> {
     // Save start of command
     let mut _secondary_expression_pos = parser.pos_start();
+
+    // match token with a command
+    // match parser.scan() {
+    //     _ => {
+    //         (parser);
+    //     } // _ => todo!(),
+    // }
+
+    todo!()
+}
+
+fn _parse_primary_expression(parser: &mut Parser) -> Result<(), SyntaxError> {
+    // Save start of command
+    let mut _primary_expression_pos = parser.pos_start();
 
     // match token with a command
     // match parser.scan() {
