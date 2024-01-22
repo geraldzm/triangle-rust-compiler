@@ -7,18 +7,49 @@ use super::{
     token::{Token, TokenKind},
 };
 
-struct Parser {
-    pub lexical_analyser: Scanner,
-    pub error_reporter: ErrorReporter,
+pub struct Parser {
+    lexical_analyser: Scanner,
+    error_reporter: ErrorReporter,
+    current_token: Option<Token>,
 }
 
 impl Parser {
+    pub fn new(mut lexical_analyser: Scanner, error_reporter: ErrorReporter) -> Self {
+        let current_token = lexical_analyser.scan();
+        Self {
+            lexical_analyser,
+            error_reporter,
+            current_token: Some(current_token),
+        }
+    }
+
     fn scan(&mut self) -> Token {
-        self.scan()
+        match self.current_token.replace(self.lexical_analyser.scan()) {
+            Some(t) => t,
+            None => Token::error_token(),
+        }
+    }
+
+    fn pos<F>(&self, f: F) -> SourcePosition
+    where
+        F: Fn(&SourcePosition) -> SourcePosition,
+    {
+        match &self.current_token {
+            Some(Token { position, .. }) => f(position),
+            None => SourcePosition::new(),
+        }
+    }
+
+    fn pos_start(&self) -> SourcePosition {
+        self.pos(SourcePosition::start_from)
+    }
+
+    fn _pos_finish(&self) -> SourcePosition {
+        self.pos(SourcePosition::finish_from)
     }
 }
 
-fn syntactic_error(
+fn _syntactic_error(
     current_token: &Option<Token>,
     error_reporter: &mut ErrorReporter,
     message_template: &str,
@@ -47,10 +78,10 @@ fn syntactic_error(
 //
 // ----------------------------------------------------------------------------
 pub fn parse_program(mut parser: Parser) {
-    let mut previous_position = SourcePosition::new();
+    let mut _previous_position = SourcePosition::new();
 
     // parse command
-    parse_command(&mut parser);
+    let _ = parse_command(&mut parser);
 }
 
 // ----------------------------------------------------------------------------
@@ -61,10 +92,10 @@ pub fn parse_program(mut parser: Parser) {
 
 fn parse_command(parser: &mut Parser) -> Result<(), SyntaxError> {
     // -----
-    let mut command_pos = SourcePosition::new();
+    let mut _command_pos = parser.pos_start();
     // -----
 
-    parse_single_command(&command_pos, parser);
+    let _ = parse_single_command(parser);
     // commandAST = parseSingleCommand();
     // while (currentToken.kind == Token.SEMICOLON) {
     //   acceptIt();
@@ -77,24 +108,55 @@ fn parse_command(parser: &mut Parser) -> Result<(), SyntaxError> {
     todo!()
 }
 
-fn parse_single_command(
-    command_start: &SourcePosition,
-    parser: &mut Parser,
-) -> Result<Command, SyntaxError> {
+fn parse_single_command(parser: &mut Parser) -> Result<Command, SyntaxError> {
     // Save start of command
-    let mut single_command_pos = SourcePosition::start_from(&command_start);
+    let mut _single_command_pos = parser.pos_start();
 
     // match token with a command
-    match current_token {
-        Some(Token {
+    match parser.scan() {
+        Token {
             kind: TokenKind::WHILE,
-            position,
-            spelling,
-        }) => {
-            // accept_it(, lexical_analyser)
+            position: _,
+            spelling: _,
+        } => {
+            let _ = parse_expression(parser);
         }
         _ => todo!(),
     }
+
+    todo!()
+}
+
+///////////////////////////////////////////////////////////////////////////////
+//
+// EXPRESSIONS
+//
+///////////////////////////////////////////////////////////////////////////////
+
+fn parse_expression(parser: &mut Parser) -> Result<(), SyntaxError> {
+    // Save start of command
+    let mut _expression_pos = parser.pos_start();
+
+    // match token with a command
+    match parser.scan() {
+        _ => {
+            let _ = parse_secondary_expression(parser);
+        } // _ => todo!(),
+    }
+
+    todo!()
+}
+
+fn parse_secondary_expression(parser: &mut Parser) -> Result<(), SyntaxError> {
+    // Save start of command
+    let mut _secondary_expression_pos = parser.pos_start();
+
+    // match token with a command
+    // match parser.scan() {
+    //     _ => {
+    //         (parser);
+    //     } // _ => todo!(),
+    // }
 
     todo!()
 }
