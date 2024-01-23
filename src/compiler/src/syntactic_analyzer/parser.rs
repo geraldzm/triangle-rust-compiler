@@ -1,7 +1,8 @@
 use crate::abstract_syntax_trees::{
-    character_expression::CharacterExpression, character_literal::CharacterLiteral,
-    command::Command, expression::Expression, identifier::Identifier, if_expression::IfExpression,
-    integer_expression::IntegerExpression, integer_literal::IntegerLiteral, operator::Operator,
+    binary_expression::BinaryExpression, character_expression::CharacterExpression,
+    character_literal::CharacterLiteral, command::Command, expression::Expression,
+    identifier::Identifier, if_expression::IfExpression, integer_expression::IntegerExpression,
+    integer_literal::IntegerLiteral, operator::Operator,
 };
 
 use super::{
@@ -57,6 +58,13 @@ impl Parser {
             pos.finish = position.start;
         } else {
             todo!()
+        }
+    }
+
+    fn is_current_token_kind(&self, the_kind: TokenKind) -> bool {
+        match &self.current_token {
+            Some(Token { kind, .. }) => the_kind == *kind,
+            _ => false,
         }
     }
 
@@ -122,7 +130,7 @@ fn _parse_identifier_literal(parser: &mut Parser) -> Result<Identifier, SyntaxEr
     )
 }
 
-fn _parse_operator_literal(parser: &mut Parser) -> Result<Operator, SyntaxError> {
+fn parse_operator_literal(parser: &mut Parser) -> Result<Operator, SyntaxError> {
     // match token with operator Literal
     parse_literal(
         parser,
@@ -193,10 +201,10 @@ fn parse_single_command(parser: &mut Parser) -> Result<Command, SyntaxError> {
 // ----------------------------------------------------------------------------
 
 fn parse_expression(parser: &mut Parser) -> Result<Box<dyn Expression>, SyntaxError> {
-    // Save start of command
+    // Save start of expression
     let mut expression_pos = parser.pos_start();
 
-    // match token with a command
+    // match token with an expression
     match parser.scan() {
         Token {
             kind: TokenKind::IF,
@@ -222,20 +230,25 @@ fn parse_expression(parser: &mut Parser) -> Result<Box<dyn Expression>, SyntaxEr
     }
 }
 
-fn parse_secondary_expression(parser: &mut Parser) -> Result<(), SyntaxError> {
+fn parse_secondary_expression(parser: &mut Parser) -> Result<Box<dyn Expression>, SyntaxError> {
     // Save start of command
-    let mut _secondary_expression_pos = parser.pos_start();
+    let secondary_expression_pos = parser.pos_start();
 
-    let expression = parse_primary_expression(parser)?;
+    let mut expression = parse_primary_expression(parser)?;
 
-    // match token with a command
-    // match parser.scan() {
-    //     _ => {
-    //         (parser);
-    //     } // _ => todo!(),
-    // }
+    while parser.is_current_token_kind(TokenKind::OPERATOR) {
+        let op_ast = parse_operator_literal(parser)?;
+        let e2_ast = parse_primary_expression(parser)?;
 
-    todo!()
+        expression = Box::new(BinaryExpression::new(
+            expression,
+            op_ast,
+            e2_ast,
+            secondary_expression_pos.clone(),
+        ));
+    }
+
+    Ok(expression)
 }
 
 fn parse_primary_expression(parser: &mut Parser) -> Result<Box<dyn Expression>, SyntaxError> {
