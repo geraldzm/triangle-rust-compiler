@@ -3,6 +3,7 @@ pub mod call_command;
 pub mod character_expression;
 pub mod character_literal;
 pub mod command;
+pub mod empty_command;
 pub mod expression;
 pub mod identifier;
 pub mod if_expression;
