@@ -1,7 +1,7 @@
 use crate::abstract_syntax_trees::{
     character_expression::CharacterExpression, character_literal::CharacterLiteral,
-    command::Command, identifier::Identifier, integer_expression::IntegerExpression,
-    integer_literal::IntegerLiteral, operator::Operator,
+    command::Command, expression::Expression, identifier::Identifier, if_expression::IfExpression,
+    integer_expression::IntegerExpression, integer_literal::IntegerLiteral, operator::Operator,
 };
 
 use super::{
@@ -34,10 +34,29 @@ impl Parser {
         }
     }
 
+    fn accept(&mut self, expected_kind: TokenKind) -> Result<(), SyntaxError> {
+        let token = self.scan();
+
+        if token.kind == expected_kind {
+            Ok(())
+        } else {
+            let message = format!("{} expected here", expected_kind.get_spelling());
+            Err(self.syntactic_error(&token, &message))
+        }
+    }
+
     fn pos_start(&self) -> SourcePosition {
         match &self.current_token {
             Some(Token { position, .. }) => SourcePosition::start_from(position),
             None => SourcePosition::new(),
+        }
+    }
+
+    fn pos_finish(&self, pos: &mut SourcePosition) {
+        if let Some(Token { position, .. }) = &self.current_token {
+            pos.finish = position.start;
+        } else {
+            todo!()
         }
     }
 
@@ -173,23 +192,41 @@ fn parse_single_command(parser: &mut Parser) -> Result<Command, SyntaxError> {
 //
 // ----------------------------------------------------------------------------
 
-fn parse_expression(parser: &mut Parser) -> Result<(), SyntaxError> {
+fn parse_expression(parser: &mut Parser) -> Result<Box<dyn Expression>, SyntaxError> {
     // Save start of command
-    let mut _expression_pos = parser.pos_start();
+    let mut expression_pos = parser.pos_start();
 
     // match token with a command
     match parser.scan() {
+        Token {
+            kind: TokenKind::IF,
+            ..
+        } => {
+            let e1_ast = parse_expression(parser)?;
+            parser.accept(TokenKind::THEN)?;
+
+            let e2_ast = parse_expression(parser)?;
+            parser.accept(TokenKind::ELSE)?;
+
+            let e3_ast = parse_expression(parser)?;
+            parser.pos_finish(&mut expression_pos);
+
+            let exp = IfExpression::new(e1_ast, e2_ast, e3_ast, expression_pos);
+
+            return Ok(Box::new(exp));
+        }
         _ => {
             let _ = parse_secondary_expression(parser);
-        } // _ => todo!(),
+            todo!()
+        }
     }
-
-    todo!()
 }
 
 fn parse_secondary_expression(parser: &mut Parser) -> Result<(), SyntaxError> {
     // Save start of command
     let mut _secondary_expression_pos = parser.pos_start();
+
+    let expression = parse_primary_expression(parser)?;
 
     // match token with a command
     // match parser.scan() {
@@ -201,7 +238,7 @@ fn parse_secondary_expression(parser: &mut Parser) -> Result<(), SyntaxError> {
     todo!()
 }
 
-fn _parse_primary_expression(parser: &mut Parser) -> Result<(), SyntaxError> {
+fn parse_primary_expression(parser: &mut Parser) -> Result<Box<dyn Expression>, SyntaxError> {
     // Save start of command
     let mut primary_expression_pos = parser.pos_start();
 
@@ -219,7 +256,8 @@ fn _parse_primary_expression(parser: &mut Parser) -> Result<(), SyntaxError> {
             let int_lit_ast = IntegerLiteral::new(spelling, position);
 
             // create Expression
-            IntegerExpression::new(int_lit_ast, primary_expression_pos);
+            let exp = IntegerExpression::new(int_lit_ast, primary_expression_pos);
+            Ok(Box::new(exp))
         }
         Token {
             kind: TokenKind::CHARLITERAL,
@@ -233,12 +271,9 @@ fn _parse_primary_expression(parser: &mut Parser) -> Result<(), SyntaxError> {
             let char_lit_ast = CharacterLiteral::new(spelling, position);
 
             // create Expression
-            CharacterExpression::new(char_lit_ast, primary_expression_pos);
+            let exp = CharacterExpression::new(char_lit_ast, primary_expression_pos);
+            Ok(Box::new(exp))
         }
-        token => {
-            return Err(parser.syntactic_error(&token, "\"%\" cannot start an expression"));
-        }
+        token => Err(parser.syntactic_error(&token, "\"%\" cannot start an expression")),
     }
-
-    todo!()
 }
