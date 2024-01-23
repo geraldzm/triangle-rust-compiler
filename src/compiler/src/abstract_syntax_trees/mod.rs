@@ -1,4 +1,5 @@
 pub mod ast;
+pub mod binary_expression;
 pub mod call_command;
 pub mod character_expression;
 pub mod character_literal;
