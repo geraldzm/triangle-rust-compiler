@@ -1,8 +1,18 @@
 use crate::abstract_syntax_trees::{
-    binary_expression::BinaryExpression, character_expression::CharacterExpression,
-    character_literal::CharacterLiteral, command::Command, expression::Expression,
-    identifier::Identifier, if_expression::IfExpression, integer_expression::IntegerExpression,
-    integer_literal::IntegerLiteral, operator::Operator,
+    binary_expression::BinaryExpression,
+    character_expression::CharacterExpression,
+    character_literal::CharacterLiteral,
+    command::Command,
+    const_declaration::ConstDeclaration,
+    declaration::Declaration,
+    expression::Expression,
+    identifier::Identifier,
+    if_expression::IfExpression,
+    integer_expression::IntegerExpression,
+    integer_literal::IntegerLiteral,
+    operator::Operator,
+    type_denoter::TypeDenoter,
+    var_declaration::{self, VarDeclaration},
 };
 
 use super::{
@@ -120,7 +130,7 @@ fn _parse_character_literal(parser: &mut Parser) -> Result<CharacterLiteral, Syn
     )
 }
 
-fn _parse_identifier_literal(parser: &mut Parser) -> Result<Identifier, SyntaxError> {
+fn parse_identifier_literal(parser: &mut Parser) -> Result<Identifier, SyntaxError> {
     // match token with identifier Literal
     parse_literal(
         parser,
@@ -192,6 +202,55 @@ fn parse_single_command(parser: &mut Parser) -> Result<Command, SyntaxError> {
     }
 
     todo!()
+}
+
+// ----------------------------------------------------------------------------
+//
+// DECLARATIONS
+//
+// ----------------------------------------------------------------------------
+fn _parse_declaration(parser: &mut Parser) {
+    // Save start of declaration
+    let mut _declaration_pos = parser.pos_start();
+}
+
+fn _parse_single_declaration(parser: &mut Parser) -> Result<Box<dyn Declaration>, SyntaxError> {
+    // Save start of declaration
+    let mut pos = parser.pos_start();
+
+    // match token with a declaration
+    match parser.scan() {
+        Token {
+            kind: TokenKind::CONST,
+            ..
+        } => {
+            let i_ast = parse_identifier_literal(parser)?;
+            parser.accept(TokenKind::IS)?;
+
+            let e_ast = parse_expression(parser)?;
+
+            parser.pos_finish(&mut pos);
+
+            let declaration_ast = ConstDeclaration::new(i_ast, e_ast, pos);
+
+            return Ok(Box::new(declaration_ast));
+        }
+        Token {
+            kind: TokenKind::VAR,
+            ..
+        } => {
+            let i_ast = parse_identifier_literal(parser)?;
+            parser.accept(TokenKind::COLON)?;
+
+            let denoter_ast = parse_type_denoter(parser)?;
+            parser.pos_finish(&mut pos);
+
+            let var_declaration_ast = VarDeclaration::new(i_ast, denoter_ast, pos);
+
+            return Ok(Box::new(var_declaration_ast));
+        }
+        _ => todo!(),
+    }
 }
 
 // ----------------------------------------------------------------------------
@@ -287,6 +346,20 @@ fn parse_primary_expression(parser: &mut Parser) -> Result<Box<dyn Expression>, 
             let exp = CharacterExpression::new(char_lit_ast, primary_expression_pos);
             Ok(Box::new(exp))
         }
-        token => Err(parser.syntactic_error(&token, "\"%\" cannot start an expression")),
+        _token => {
+            todo!()
+
+            // Err(parser.syntactic_error(&token, "\"%\" cannot start an expression"));
+        }
     }
+}
+
+// ----------------------------------------------------------------------------
+//
+// TYPE-DENOTERS
+//
+// ----------------------------------------------------------------------------
+
+fn parse_type_denoter(parser: &mut Parser) -> Result<Box<dyn TypeDenoter>, SyntaxError> {
+    todo!()
 }
