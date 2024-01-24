@@ -1,6 +1,6 @@
 use crate::syntactic_analyzer::source_position::SourcePosition;
 
-use super::integer_literal::IntegerLiteral;
+use super::{expression::Expression, integer_literal::IntegerLiteral};
 
 pub struct IntegerExpression {
     int_literal: IntegerLiteral,
@@ -13,5 +13,11 @@ impl IntegerExpression {
             int_literal,
             position,
         }
+    }
+}
+
+impl Expression for IntegerExpression {
+    fn visit(&self) {
+        todo!()
     }
 }

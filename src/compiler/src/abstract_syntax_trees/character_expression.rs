@@ -1,6 +1,6 @@
 use crate::syntactic_analyzer::source_position::SourcePosition;
 
-use super::character_literal::CharacterLiteral;
+use super::{character_literal::CharacterLiteral, expression::Expression};
 
 pub struct CharacterExpression {
     char_literal: CharacterLiteral,
@@ -13,5 +13,11 @@ impl CharacterExpression {
             char_literal,
             position,
         }
+    }
+}
+
+impl Expression for CharacterExpression {
+    fn visit(&self) {
+        todo!()
     }
 }
