@@ -1,6 +1,5 @@
 pub mod ast;
 pub mod binary_expression;
-pub mod call_command;
 pub mod character_expression;
 pub mod character_literal;
 pub mod command;
@@ -8,6 +7,7 @@ pub mod const_declaration;
 pub mod declaration;
 pub mod empty_command;
 pub mod expression;
+pub mod formal_parameter_sequence;
 pub mod identifier;
 pub mod if_expression;
 pub mod integer_expression;
