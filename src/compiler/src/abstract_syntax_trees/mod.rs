@@ -14,6 +14,7 @@ pub mod integer_expression;
 pub mod integer_literal;
 pub mod operator;
 pub mod proc_actual_parameter;
+pub mod proc_declaration;
 pub mod type_denoter;
 pub mod var_declaration;
 pub mod visitor;

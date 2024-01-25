@@ -6,11 +6,13 @@ use crate::abstract_syntax_trees::{
     const_declaration::ConstDeclaration,
     declaration::Declaration,
     expression::Expression,
+    formal_parameter_sequence::FormalParameterSequence,
     identifier::Identifier,
     if_expression::IfExpression,
     integer_expression::IntegerExpression,
     integer_literal::IntegerLiteral,
     operator::Operator,
+    proc_declaration::{self, ProcDeclaration},
     type_denoter::TypeDenoter,
     var_declaration::{self, VarDeclaration},
 };
@@ -249,6 +251,25 @@ fn _parse_single_declaration(parser: &mut Parser) -> Result<Box<dyn Declaration>
 
             return Ok(Box::new(var_declaration_ast));
         }
+        Token {
+            kind: TokenKind::PROC,
+            ..
+        } => {
+            let i_ast = parse_identifier_literal(parser)?;
+            parser.accept(TokenKind::LPAREN)?;
+
+            let fps_ast = parse_formal_parameter_sequence(parser)?;
+            parser.accept(TokenKind::RPAREN)?;
+            parser.accept(TokenKind::IS)?;
+
+            let c_ast = parse_single_command(parser)?;
+
+            parser.pos_finish(&mut pos);
+
+            let proc_declaration = ProcDeclaration::new(i_ast, fps_ast, c_ast, pos);
+
+            return Ok(Box::new(proc_declaration));
+        }
         _ => todo!(),
     }
 }
@@ -361,5 +382,18 @@ fn parse_primary_expression(parser: &mut Parser) -> Result<Box<dyn Expression>, 
 // ----------------------------------------------------------------------------
 
 fn parse_type_denoter(parser: &mut Parser) -> Result<Box<dyn TypeDenoter>, SyntaxError> {
+    todo!()
+}
+
+// ----------------------------------------------------------------------------
+//
+// PARAMETERS
+//
+// ----------------------------------------------------------------------------
+//
+
+fn parse_formal_parameter_sequence(
+    parser: &mut Parser,
+) -> Result<FormalParameterSequence, SyntaxError> {
     todo!()
 }
