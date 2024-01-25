@@ -1,20 +1,11 @@
 use crate::abstract_syntax_trees::{
-    binary_expression::BinaryExpression,
-    character_expression::CharacterExpression,
-    character_literal::CharacterLiteral,
-    command::Command,
-    const_declaration::ConstDeclaration,
-    declaration::Declaration,
-    expression::Expression,
-    formal_parameter_sequence::FormalParameterSequence,
-    identifier::Identifier,
-    if_expression::IfExpression,
-    integer_expression::IntegerExpression,
-    integer_literal::IntegerLiteral,
-    operator::Operator,
-    proc_declaration::{self, ProcDeclaration},
-    type_denoter::TypeDenoter,
-    var_declaration::{self, VarDeclaration},
+    binary_expression::BinaryExpression, character_expression::CharacterExpression,
+    character_literal::CharacterLiteral, command::Command, const_declaration::ConstDeclaration,
+    declaration::Declaration, expression::Expression,
+    formal_parameter_sequence::FormalParameterSequence, identifier::Identifier,
+    if_expression::IfExpression, integer_expression::IntegerExpression,
+    integer_literal::IntegerLiteral, operator::Operator, proc_declaration::ProcDeclaration,
+    type_denoter::TypeDenoter, var_declaration::VarDeclaration,
 };
 
 use super::{
