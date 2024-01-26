@@ -5,7 +5,8 @@ use crate::abstract_syntax_trees::{
     formal_parameter_sequence::FormalParameterSequence, func_declaration::FuncDeclaration,
     identifier::Identifier, if_expression::IfExpression, integer_expression::IntegerExpression,
     integer_literal::IntegerLiteral, operator::Operator, proc_declaration::ProcDeclaration,
-    type_declaration::TypeDeclaration, type_denoter::TypeDenoter, var_declaration::VarDeclaration,
+    sequential_declaration::SequentialDeclaration, type_declaration::TypeDeclaration,
+    type_denoter::TypeDenoter, var_declaration::VarDeclaration,
 };
 
 use super::{
@@ -202,12 +203,29 @@ fn parse_single_command(parser: &mut Parser) -> Result<Command, SyntaxError> {
 // DECLARATIONS
 //
 // ----------------------------------------------------------------------------
-fn _parse_declaration(parser: &mut Parser) {
+fn _parse_declaration(parser: &mut Parser) -> Result<Box<dyn Declaration>, SyntaxError> {
     // Save start of declaration
-    let mut _declaration_pos = parser.pos_start();
+    let mut pos = parser.pos_start();
+
+    let mut declaration_ast = parse_single_declaration(parser)?;
+
+    while parser.is_current_token_kind(TokenKind::SEMICOLON) {
+        let _ = parser.scan(); // consume the semicolon
+        let d_ast = parse_single_declaration(parser)?;
+
+        parser.pos_finish(&mut pos);
+
+        declaration_ast = Box::new(SequentialDeclaration::new(
+            declaration_ast,
+            d_ast,
+            pos.clone(),
+        ));
+    }
+
+    Ok(declaration_ast)
 }
 
-fn _parse_single_declaration(parser: &mut Parser) -> Result<Box<dyn Declaration>, SyntaxError> {
+fn parse_single_declaration(parser: &mut Parser) -> Result<Box<dyn Declaration>, SyntaxError> {
     // Save start of declaration
     let mut pos = parser.pos_start();
 
