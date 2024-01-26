@@ -5,7 +5,7 @@ use crate::abstract_syntax_trees::{
     formal_parameter_sequence::FormalParameterSequence, func_declaration::FuncDeclaration,
     identifier::Identifier, if_expression::IfExpression, integer_expression::IntegerExpression,
     integer_literal::IntegerLiteral, operator::Operator, proc_declaration::ProcDeclaration,
-    type_denoter::TypeDenoter, var_declaration::VarDeclaration,
+    type_declaration::TypeDeclaration, type_denoter::TypeDenoter, var_declaration::VarDeclaration,
 };
 
 use super::{
@@ -282,7 +282,21 @@ fn _parse_single_declaration(parser: &mut Parser) -> Result<Box<dyn Declaration>
 
             return Ok(Box::new(declaration_ast));
         }
-        _ => todo!(),
+        Token {
+            kind: TokenKind::TYPE,
+            ..
+        } => {
+            let i_ast = parse_identifier_literal(parser)?;
+            parser.accept(TokenKind::IS)?;
+
+            let t_ast = parse_type_denoter(parser)?;
+            parser.pos_finish(&mut pos);
+
+            let declaration_ast = TypeDeclaration::new(i_ast, t_ast, pos);
+
+            return Ok(Box::new(declaration_ast));
+        }
+        token => Err(parser.syntactic_error(&token, "\"%\" cannot start a declaration")),
     }
 }
 
