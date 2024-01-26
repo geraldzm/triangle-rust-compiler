@@ -2,8 +2,8 @@ use crate::abstract_syntax_trees::{
     binary_expression::BinaryExpression, character_expression::CharacterExpression,
     character_literal::CharacterLiteral, command::Command, const_declaration::ConstDeclaration,
     declaration::Declaration, expression::Expression,
-    formal_parameter_sequence::FormalParameterSequence, identifier::Identifier,
-    if_expression::IfExpression, integer_expression::IntegerExpression,
+    formal_parameter_sequence::FormalParameterSequence, func_declaration::FuncDeclaration,
+    identifier::Identifier, if_expression::IfExpression, integer_expression::IntegerExpression,
     integer_literal::IntegerLiteral, operator::Operator, proc_declaration::ProcDeclaration,
     type_denoter::TypeDenoter, var_declaration::VarDeclaration,
 };
@@ -261,6 +261,27 @@ fn _parse_single_declaration(parser: &mut Parser) -> Result<Box<dyn Declaration>
 
             return Ok(Box::new(proc_declaration));
         }
+        Token {
+            kind: TokenKind::FUNC,
+            ..
+        } => {
+            let i_ast = parse_identifier_literal(parser)?;
+            parser.accept(TokenKind::LPAREN)?;
+
+            let fps_ast = parse_formal_parameter_sequence(parser)?;
+            parser.accept(TokenKind::RPAREN)?;
+            parser.accept(TokenKind::COLON)?;
+
+            let denoter_ast = parse_type_denoter(parser)?;
+            parser.accept(TokenKind::IS)?;
+            let e_ast = parse_expression(parser)?;
+
+            parser.pos_finish(&mut pos);
+
+            let declaration_ast = FuncDeclaration::new(i_ast, fps_ast, denoter_ast, e_ast, pos);
+
+            return Ok(Box::new(declaration_ast));
+        }
         _ => todo!(),
     }
 }
@@ -381,7 +402,6 @@ fn parse_type_denoter(parser: &mut Parser) -> Result<Box<dyn TypeDenoter>, Synta
 // PARAMETERS
 //
 // ----------------------------------------------------------------------------
-//
 
 fn parse_formal_parameter_sequence(
     parser: &mut Parser,

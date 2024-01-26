@@ -1,8 +1,8 @@
 use crate::syntactic_analyzer::source_position::SourcePosition;
 
 use super::{
-    command::Command, declaration::Declaration, expression::Expression,
-    formal_parameter_sequence::FormalParameterSequence, identifier::Identifier,
+    command::Command, declaration::Declaration, formal_parameter_sequence::FormalParameterSequence,
+    identifier::Identifier,
 };
 
 pub struct ProcDeclaration {

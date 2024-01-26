@@ -8,6 +8,7 @@ pub mod declaration;
 pub mod empty_command;
 pub mod expression;
 pub mod formal_parameter_sequence;
+pub mod func_declaration;
 pub mod identifier;
 pub mod if_expression;
 pub mod integer_expression;
