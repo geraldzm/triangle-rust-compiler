@@ -226,7 +226,7 @@ fn _parse_single_declaration(parser: &mut Parser) -> Result<Box<dyn Declaration>
 
             let declaration_ast = ConstDeclaration::new(i_ast, e_ast, pos);
 
-            return Ok(Box::new(declaration_ast));
+            Ok(Box::new(declaration_ast))
         }
         Token {
             kind: TokenKind::VAR,
@@ -240,7 +240,7 @@ fn _parse_single_declaration(parser: &mut Parser) -> Result<Box<dyn Declaration>
 
             let var_declaration_ast = VarDeclaration::new(i_ast, denoter_ast, pos);
 
-            return Ok(Box::new(var_declaration_ast));
+            Ok(Box::new(var_declaration_ast))
         }
         Token {
             kind: TokenKind::PROC,
@@ -259,7 +259,7 @@ fn _parse_single_declaration(parser: &mut Parser) -> Result<Box<dyn Declaration>
 
             let proc_declaration = ProcDeclaration::new(i_ast, fps_ast, c_ast, pos);
 
-            return Ok(Box::new(proc_declaration));
+            Ok(Box::new(proc_declaration))
         }
         Token {
             kind: TokenKind::FUNC,
@@ -280,7 +280,7 @@ fn _parse_single_declaration(parser: &mut Parser) -> Result<Box<dyn Declaration>
 
             let declaration_ast = FuncDeclaration::new(i_ast, fps_ast, denoter_ast, e_ast, pos);
 
-            return Ok(Box::new(declaration_ast));
+            Ok(Box::new(declaration_ast))
         }
         Token {
             kind: TokenKind::TYPE,
@@ -294,7 +294,7 @@ fn _parse_single_declaration(parser: &mut Parser) -> Result<Box<dyn Declaration>
 
             let declaration_ast = TypeDeclaration::new(i_ast, t_ast, pos);
 
-            return Ok(Box::new(declaration_ast));
+            Ok(Box::new(declaration_ast))
         }
         token => Err(parser.syntactic_error(&token, "\"%\" cannot start a declaration")),
     }
