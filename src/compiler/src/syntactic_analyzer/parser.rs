@@ -2,11 +2,12 @@ use crate::abstract_syntax_trees::{
     binary_expression::BinaryExpression, character_expression::CharacterExpression,
     character_literal::CharacterLiteral, command::Command, const_declaration::ConstDeclaration,
     const_formal_parameter::ConstFormalParameter, declaration::Declaration, expression::Expression,
-    formal_parameter_sequence::FormalParameterSequence, func_declaration::FuncDeclaration,
-    identifier::Identifier, if_expression::IfExpression, integer_expression::IntegerExpression,
-    integer_literal::IntegerLiteral, operator::Operator, proc_declaration::ProcDeclaration,
-    sequential_declaration::SequentialDeclaration, type_declaration::TypeDeclaration,
-    type_denoter::TypeDenoter, var_declaration::VarDeclaration,
+    formal_parameter::FormalParameter, formal_parameter_sequence::FormalParameterSequence,
+    func_declaration::FuncDeclaration, identifier::Identifier, if_expression::IfExpression,
+    integer_expression::IntegerExpression, integer_literal::IntegerLiteral, operator::Operator,
+    proc_declaration::ProcDeclaration, sequential_declaration::SequentialDeclaration,
+    type_declaration::TypeDeclaration, type_denoter::TypeDenoter, var_declaration::VarDeclaration,
+    var_formal_parameter::VarFormalParameter,
 };
 
 use super::{
@@ -435,9 +436,7 @@ fn parse_type_denoter(parser: &mut Parser) -> Result<Box<dyn TypeDenoter>, Synta
 //
 // ----------------------------------------------------------------------------
 
-fn parse_formal_parameter_sequence(
-    parser: &mut Parser,
-) -> Result<Box<dyn FormalParameterSequence>, SyntaxError> {
+fn parse_formal_parameter(parser: &mut Parser) -> Result<Box<dyn FormalParameter>, SyntaxError> {
     // Save start of command
     let mut pos = parser.pos_start();
 
@@ -456,7 +455,26 @@ fn parse_formal_parameter_sequence(
             let formal_ast = ConstFormalParameter::new(i_ast, t_ast, pos);
             Ok(Box::new(formal_ast))
         }
+        Token {
+            kind: TokenKind::VAR,
+            ..
+        } => {
+            let i_ast = parse_identifier_literal(parser)?;
+            parser.accept(TokenKind::COLON)?;
+            let t_ast = parse_type_denoter(parser)?;
+
+            parser.pos_finish(&mut pos);
+
+            let formal_ast = VarFormalParameter::new(i_ast, t_ast, pos);
+            Ok(Box::new(formal_ast))
+        }
 
         _ => todo!(),
     }
+}
+
+fn parse_formal_parameter_sequence(
+    parser: &mut Parser,
+) -> Result<Box<dyn FormalParameterSequence>, SyntaxError> {
+    todo!()
 }
