@@ -4,6 +4,7 @@ pub mod character_expression;
 pub mod character_literal;
 pub mod command;
 pub mod const_declaration;
+pub mod const_formal_parameter;
 pub mod declaration;
 pub mod empty_command;
 pub mod expression;

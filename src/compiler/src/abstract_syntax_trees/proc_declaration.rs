@@ -7,7 +7,7 @@ use super::{
 
 pub struct ProcDeclaration {
     i_ast: Identifier,
-    fps_ast: FormalParameterSequence,
+    fps_ast: Box<dyn FormalParameterSequence>,
     c_ast: Command,
     position: SourcePosition,
 }
@@ -15,7 +15,7 @@ pub struct ProcDeclaration {
 impl ProcDeclaration {
     pub fn new(
         i_ast: Identifier,
-        fps_ast: FormalParameterSequence,
+        fps_ast: Box<dyn FormalParameterSequence>,
         c_ast: Command,
         position: SourcePosition,
     ) -> Self {

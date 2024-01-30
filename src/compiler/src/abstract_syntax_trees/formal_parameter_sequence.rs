@@ -1,11 +1,5 @@
 use crate::syntactic_analyzer::source_position::SourcePosition;
 
-pub struct FormalParameterSequence {
-    position: SourcePosition,
-}
+use super::declaration::Declaration;
 
-impl FormalParameterSequence {
-    pub fn new(position: SourcePosition) -> Self {
-        Self { position }
-    }
-}
+pub trait FormalParameterSequence: Declaration {}

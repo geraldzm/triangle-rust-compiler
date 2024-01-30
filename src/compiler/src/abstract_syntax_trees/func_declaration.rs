@@ -8,7 +8,7 @@ use super::{
 
 pub struct FuncDeclaration {
     i_ast: Identifier,
-    fps_ast: FormalParameterSequence,
+    fps_ast: Box<dyn FormalParameterSequence>,
     t_denoter: Box<dyn TypeDenoter>,
     e_ast: Box<dyn Expression>,
     pos: SourcePosition,
@@ -17,7 +17,7 @@ pub struct FuncDeclaration {
 impl FuncDeclaration {
     pub fn new(
         i_ast: Identifier,
-        fps_ast: FormalParameterSequence,
+        fps_ast: Box<dyn FormalParameterSequence>,
         t_denoter: Box<dyn TypeDenoter>,
         e_ast: Box<dyn Expression>,
         pos: SourcePosition,
