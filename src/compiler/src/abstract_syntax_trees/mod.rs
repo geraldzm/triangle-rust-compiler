@@ -11,6 +11,7 @@ pub mod expression;
 pub mod formal_parameter;
 pub mod formal_parameter_sequence;
 pub mod func_declaration;
+pub mod func_formal_parameter;
 pub mod identifier;
 pub mod if_expression;
 pub mod integer_expression;

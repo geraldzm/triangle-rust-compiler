@@ -3,11 +3,11 @@ use crate::abstract_syntax_trees::{
     character_literal::CharacterLiteral, command::Command, const_declaration::ConstDeclaration,
     const_formal_parameter::ConstFormalParameter, declaration::Declaration, expression::Expression,
     formal_parameter::FormalParameter, formal_parameter_sequence::FormalParameterSequence,
-    func_declaration::FuncDeclaration, identifier::Identifier, if_expression::IfExpression,
-    integer_expression::IntegerExpression, integer_literal::IntegerLiteral, operator::Operator,
-    proc_declaration::ProcDeclaration, proc_formal_parameter::ProcFormalParameter,
-    sequential_declaration::SequentialDeclaration, type_declaration::TypeDeclaration,
-    type_denoter::TypeDenoter, var_declaration::VarDeclaration,
+    func_declaration::FuncDeclaration, func_formal_parameter::FuncFormalParameter,
+    identifier::Identifier, if_expression::IfExpression, integer_expression::IntegerExpression,
+    integer_literal::IntegerLiteral, operator::Operator, proc_declaration::ProcDeclaration,
+    proc_formal_parameter::ProcFormalParameter, sequential_declaration::SequentialDeclaration,
+    type_declaration::TypeDeclaration, type_denoter::TypeDenoter, var_declaration::VarDeclaration,
     var_formal_parameter::VarFormalParameter,
 };
 
@@ -483,7 +483,23 @@ fn parse_formal_parameter(parser: &mut Parser) -> Result<Box<dyn FormalParameter
             let formal_ast = ProcFormalParameter::new(i_ast, fps_ast, pos);
             Ok(Box::new(formal_ast))
         }
-        _ => todo!(),
+        Token {
+            kind: TokenKind::FUNC,
+            ..
+        } => {
+            let i_ast = parse_identifier_literal(parser)?;
+            parser.accept(TokenKind::LPAREN)?;
+            let fps_ast = parse_formal_parameter_sequence(parser)?;
+            parser.accept(TokenKind::RPAREN)?;
+            parser.accept(TokenKind::COLON)?;
+            let t_ast = parse_type_denoter(parser)?;
+
+            parser.pos_finish(&mut pos);
+
+            let formal_ast = FuncFormalParameter::new(i_ast, fps_ast, t_ast, pos);
+            Ok(Box::new(formal_ast))
+        }
+        token => Err(parser.syntactic_error(&token, "\"%\" cannot start a formal parameter")),
     }
 }
 
