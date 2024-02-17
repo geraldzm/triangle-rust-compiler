@@ -5,8 +5,9 @@ use crate::abstract_syntax_trees::{
     formal_parameter::FormalParameter, formal_parameter_sequence::FormalParameterSequence,
     func_declaration::FuncDeclaration, identifier::Identifier, if_expression::IfExpression,
     integer_expression::IntegerExpression, integer_literal::IntegerLiteral, operator::Operator,
-    proc_declaration::ProcDeclaration, sequential_declaration::SequentialDeclaration,
-    type_declaration::TypeDeclaration, type_denoter::TypeDenoter, var_declaration::VarDeclaration,
+    proc_declaration::ProcDeclaration, proc_formal_parameter::ProcFormalParameter,
+    sequential_declaration::SequentialDeclaration, type_declaration::TypeDeclaration,
+    type_denoter::TypeDenoter, var_declaration::VarDeclaration,
     var_formal_parameter::VarFormalParameter,
 };
 
@@ -468,7 +469,20 @@ fn parse_formal_parameter(parser: &mut Parser) -> Result<Box<dyn FormalParameter
             let formal_ast = VarFormalParameter::new(i_ast, t_ast, pos);
             Ok(Box::new(formal_ast))
         }
+        Token {
+            kind: TokenKind::PROC,
+            ..
+        } => {
+            let i_ast = parse_identifier_literal(parser)?;
+            parser.accept(TokenKind::LPAREN)?;
+            let fps_ast = parse_formal_parameter_sequence(parser)?;
+            parser.accept(TokenKind::RPAREN)?;
 
+            parser.pos_finish(&mut pos);
+
+            let formal_ast = ProcFormalParameter::new(i_ast, fps_ast, pos);
+            Ok(Box::new(formal_ast))
+        }
         _ => todo!(),
     }
 }
